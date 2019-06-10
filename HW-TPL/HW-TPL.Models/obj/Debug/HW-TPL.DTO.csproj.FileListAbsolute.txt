@@ -1,0 +1,9 @@
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\bin\Debug\HW-TPL.Models.dll
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\bin\Debug\HW-TPL.Models.pdb
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\obj\Debug\HW-TPL.DTO.csprojAssemblyReference.cache
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\obj\Debug\HW-TPL.DTO.csproj.CoreCompileInputs.cache
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\obj\Debug\HW-TPL.Models.dll
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\obj\Debug\HW-TPL.Models.pdb
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\bin\Debug\Newtonsoft.Json.dll
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\bin\Debug\Newtonsoft.Json.xml
+C:\Users\azat\source\repos\HW-TPL\HW-TPL.Models\obj\Debug\HW-TPL.DTO.csproj.CopyComplete
