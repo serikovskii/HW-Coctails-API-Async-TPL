@@ -1,46 +1,81 @@
 ﻿using HW_TPL.DataAccess;
-using HW_TPL.Models;
+using HW_TPL.DTO;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HW_TPL.Service
 {
     public class Database
     {
+        private DrinkContext context;
+        private Sender sender;
+        public Database()
+        {
+            context = new DrinkContext();
+            sender = new Sender();
+        }
+
+        ~Database()
+        {
+            context.Dispose();
+        }
         public async void Write(AllDrinks drink)
         {
-            using (var context = new DrinkContext())
+            var ingredient = new Ingredient();
+            var tmpD = drink.Drinks[0];
+
+            var searchDublicateIngredient = context.Ingredients.Where(dupl => dupl.IngredientName == tmpD.IngredientDrink).FirstOrDefault();
+            if (searchDublicateIngredient != null)
             {
-                var ingredient = new Ingredient();
-                context.AllDrinksess.Add(drink);
-                if (context.Drinksess != null)
+                searchDublicateIngredient.IngredientCount-=tmpD.CountDrink;
+                context.Drinksess.AddRange(drink.Drinks);
+            }
+            else
+            {
+                context.Drinksess.AddRange(drink.Drinks);
+                ingredient.IngredientName = tmpD.IngredientDrink;
+                context.Ingredients.Add(ingredient);
+            }
+            await context.SaveChangesAsync();
+            await Task.Run(() => CheckIngredient());
+        }
+
+        public async void CheckIngredient()
+        {
+            var minIngredient = 3;
+            var maxRefilIngredient = 10;
+            var endedIngr = await context.Ingredients.Where(ingr => ingr.IngredientCount <= minIngredient).ToListAsync();
+            if (endedIngr.Count != 0)
+            {
+                if (sender.InvoiceToOrderIngredients(endedIngr))
                 {
-                    var tmp = context.Drinksess.ToList();
-                    var tmpDrink = drink.Drinks[0];
-                    
-                    var searchDublicateIngredient = context.Ingredients.Where(dupl => dupl.IngredientName == tmpDrink.IngredientDrink).FirstOrDefault();
-                    if (searchDublicateIngredient != null)
+                    foreach (var refilIngr in endedIngr)
                     {
-                        searchDublicateIngredient.IngredientCount--;
-                    }
-                    else
-                    {
-                        context.Drinksess.AddRange(drink.Drinks);
-                        ingredient.IngredientName = drink.Drinks[0].IngredientDrink;
-                        context.Ingredients.Add(ingredient);
+                        refilIngr.IngredientCount += maxRefilIngredient;
+                        await context.SaveChangesAsync();
                     }
                 }
-                else
-                {
-                    ingredient.IngredientName = drink.Drinks[0].IngredientDrink;
-                    context.Ingredients.Add(ingredient);
-                    context.Drinksess.AddRange(drink.Drinks);
-                }
-                await context.SaveChangesAsync();
+            }
+
+            //context.Dispose();
+        }
+
+
+        public async void ReportOrders()
+        {
+            DateTime dateToSendReport = new DateTime(2019, 07, 01);
+            DateTime dateToSendReportEarlier = dateToSendReport.AddMonths(-1);
+            if(DateTime.Now>=dateToSendReport && DateTime.Now <= dateToSendReport.AddDays(1))
+            {
+                var ordersDrinkToMonth = context.Drinksess
+                    .Where(drink => drink.DateOrderDrink > dateToSendReportEarlier && drink.DateOrderDrink < dateToSendReport).ToList();
+                await Task.Run(() => sender.SendReportToBoss(ordersDrinkToMonth));
+                dateToSendReport.AddMonths(1);
             }
         }
+
     }
 }

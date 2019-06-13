@@ -7,27 +7,7 @@
         xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <!--<Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="3*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-
-        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Column="0" Grid.Row="0" Height="90" Padding="10" Margin="10" Grid.ColumnSpan="2">
-            <StackPanel Orientation="Horizontal">
-                <ComboBox Name="filter" HorizontalAlignment="left" Margin="20" Width="150" Height="30" SelectionChanged="FilterSelected">
-                    <ComboBoxItem Content="Category"/>
-                    <ComboBoxItem Content="Alcohol"/>
-                </ComboBox>
-                <ComboBox Name="type" HorizontalAlignment="left" Margin="20" Width="150" Height="30" SelectionChanged="TypeSelected"/>
-            </StackPanel>
-        </materialDesign:Card>
-    </Grid>-->
+        Title="MainWindow" Height="500" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -35,12 +15,12 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Column="0" Grid.Row="0" Height="85" Padding="10" Margin="10" Grid.ColumnSpan="2">
             <StackPanel Orientation="Vertical">
                 <ComboBox x:Name="filter" Width="200" Height="40" Margin="-500,15,0,0" SelectionChanged="FilterSelectionChanged"
-                          materialDesign:HintAssist.Hint="Filter"
+                          materialDesign:HintAssist.Hint="1. Select filter"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}">
                     <ComboBoxItem Content="Category"/>
                     <ComboBoxItem Content="Alcohol"/>
@@ -48,43 +28,84 @@
                 <ComboBox x:Name="type" Width="200" Height="40" Margin="277,-40,0,0" 
                           SelectionChanged="TypeSelectionChanged" 
                           IsEnabled="False"
-                          materialDesign:HintAssist.Hint="Type"
+                          materialDesign:HintAssist.Hint="2. Select type"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
             </StackPanel>
         </materialDesign:Card>
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Column="0" Grid.Row="1" Height="280" Padding="10" Margin="10">
+            
             <DataGrid Name="listCoctails" AutoGenerateColumns="False" SelectionChanged="ListCoctailsSelectionChanged">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Coctails" Binding="{Binding Path=NameDrink}"/>
+                    <DataGridTextColumn Header="3. Select coctails" Binding="{Binding Path=NameDrink}"/>
                 </DataGrid.Columns>
             </DataGrid>
+                
         </materialDesign:Card>
         <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Column="1" Grid.Row="1" Height="280" Padding="10" Margin="10">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="3*"/>
+                    <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Grid.Row="0">
-                    <TextBlock FontWeight="Bold">Name:</TextBlock>
-                    <TextBlock FontWeight="Bold">Category:</TextBlock>
-                    <TextBlock FontWeight="Bold">Alcohol:</TextBlock>
-                    <TextBlock FontWeight="Bold">Ingredients:</TextBlock>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Grid.Row="0">
-                    <TextBlock Name="nameDrink" Text="{Binding Path=NameDrink}"/>
-                    <TextBlock Name="categoryDrink" Text="{Binding Path=CategoryDrink}"/>
-                    <TextBlock Name="alcoholDrink" Text="{Binding Path=AlcoholDrink}"/>
-                    <TextBlock Name="ingredDrink" Text="{Binding Path=IngredientDrink}"/>
-                </StackPanel>
-                <Button Name="order" Grid.Column="1" Grid.Row="1" Content="Order" Width="150" Height="40" Click="OrderDrink"/>
+                <DataGrid Name="coctailsInfo" VerticalAlignment="Top" AutoGenerateColumns="False" Grid.ColumnSpan="2">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Path=NameDrink}"/>
+                        <DataGridTextColumn Header="Category" Binding="{Binding Path=CategoryDrink}"/>
+                        <DataGridTextColumn Header="Alcohol" Binding="{Binding Path=AlcoholicFortresDrink}"/>
+                        <DataGridTextColumn Header="Ingredient" Binding="{Binding Path=IngredientDrink}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Image Name="image" Grid.Row="1" Height="100" Width="100" Margin="68,10.4,76,20"></Image>
+                <ComboBox x:Name="count" Height="40"  Grid.Column="1" Grid.Row="1" 
+                          Margin="10,10.4,105.8,80" SelectionChanged="CountSelectionChanged"
+                          materialDesign:HintAssist.Hint="4. Select count"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          IsEnabled="False">
+                    <ComboBoxItem Content="1"/>
+                    <ComboBoxItem Content="2"/>
+                    <ComboBoxItem Content="3"/>
+                    <ComboBoxItem Content="4"/>
+                    <ComboBoxItem Content="5"/>
+                </ComboBox>
+                <Button Name="order" Grid.Column="1" Grid.Row="1" Content="Order" IsEnabled="False" Height="40" Click="OrderDrink" Margin="10,67.4,105.8,23" RenderTransformOrigin="0.129,0.485"/>
             </Grid>
 
         </materialDesign:Card>
 
     </Grid>
+    <!--<Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Height="280" Padding="10" Margin="10">
+            <ListBox Name="listCategory">
+                <ListBoxItem Content="{Binding Path=CategoryName}"/>
+            </ListBox>
+        </materialDesign:Card>
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Column="1" Height="280" Padding="10" Margin="10">
+            <ListBox Name="listCoctail" IsEnabled="False">
+                -->
+    <!--<ListBoxItem Content="{Binding Path=CoctailName}"/>-->
+    <!--
+            </ListBox>
+        </materialDesign:Card>
+        <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Column="2" Height="280" Padding="10" Margin="10">
+            <ListBox Name="listOrder" IsEnabled="False">
+                -->
+    <!--<ListBoxItem Content="{Binding Path=CoctailName}"/>-->
+    <!--
+            </ListBox>
+        </materialDesign:Card>
+        <Button Name="Order" Content="Order" Height="50" Width="150" Grid.Row="1" Grid.Column="2" Click="OrderDrink"/>
+    </Grid>-->
 </Window>

@@ -1,22 +1,12 @@
-﻿using HW_TPL.Models;
+﻿using HW_TPL.DTO;
 using HW_TPL.Service;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace HW_TPL
 {
@@ -34,11 +24,11 @@ namespace HW_TPL
         public MainWindow()
         {
             InitializeComponent();
-
             typeNames = new ObservableCollection<string>();
             drinks = new List<string>();
             service = new Deserialize();
             database = new Database();
+            Task.Run(()=> database.ReportOrders());
         }
 
 
@@ -50,7 +40,14 @@ namespace HW_TPL
                 Dispatcher.Invoke(() => typeNames.Clear());
                 Dispatcher.Invoke(() => type.IsEnabled = false);
             }
-            result = service.ExecuteFilterName(indexFilter);
+            //result = service.ExecuteFilterName(indexFilter);
+            var taskType = Task.Run(() =>
+            {
+                return service.ExecuteFilterName(indexFilter);
+                 
+            }).Result;
+
+            result = taskType;
             switch (indexFilter)
             {
                 case 0:
@@ -66,8 +63,6 @@ namespace HW_TPL
                     }
                     break;
             }
-
-            //TODO isCompleted?
             Dispatcher.Invoke(() => type.IsEnabled = true);
         }
 
@@ -75,7 +70,6 @@ namespace HW_TPL
         {
             indexFilter = filter.SelectedIndex;
             InitTypeAsync();
-
             type.ItemsSource = typeNames;
         }
         private async void InitTypeAsync()
@@ -88,41 +82,58 @@ namespace HW_TPL
             if (type.SelectedItem != null)
             {
                 typeName = type.SelectedItem.ToString();
-                resultDrink = service.ExecuteAllDrinks(indexFilter, typeName, null);
+                //resultDrink = service.ExecuteAllDrinks(indexFilter, typeName, null);
+                var taskDrink = Task.Run(() =>
+                {
+                    return service.ExecuteAllDrinks(indexFilter, typeName, null);
+
+                }).Result;
+
+                resultDrink = taskDrink;
                 listCoctails.ItemsSource = resultDrink.Drinks;
             }
             else
             {
                 typeName = "";
             }
-            
         }
-
 
         private void ListCoctailsSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(listCoctails.SelectedIndex != -1)
+            if (listCoctails.SelectedIndex != -1)
             {
                 resultAllDrinks = service.ExecuteAllDrinks(null, null, resultDrink.Drinks.ToArray()[listCoctails.SelectedIndex].IdDrink);
-                nameDrink.Text = resultAllDrinks.Drinks.ToArray()[0].NameDrink;
-                categoryDrink.Text = resultAllDrinks.Drinks.ToArray()[0].CategoryDrink;
-                alcoholDrink.Text = resultAllDrinks.Drinks.ToArray()[0].AlcoholicFortresDrink;
-                ingredDrink.Text = resultAllDrinks.Drinks.ToArray()[0].IngredientDrink;
+                coctailsInfo.ItemsSource = resultAllDrinks.Drinks;
+                count.IsEnabled = true;
+                image.Source = ImageInit(resultAllDrinks.Drinks.ToArray()[0].PhotoDrink);
             }
             else
             {
-                nameDrink.Text = null;
-                categoryDrink.Text = null;
-                alcoholDrink.Text = null;
-                ingredDrink.Text = null;
+                count.IsEnabled = false;
+                order.IsEnabled = false;
+                coctailsInfo.ItemsSource = null;
             }
-            
         }
 
+        public BitmapImage ImageInit(string path)
+        {
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path);
+            bitmap.EndInit();
+            return bitmap;
+        }
+
+        private void CountSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            order.IsEnabled = true;
+        }
         private void OrderDrink(object sender, RoutedEventArgs e)
         {
-            database.Write(resultAllDrinks);
+            resultAllDrinks.Drinks.ToArray()[0].CountDrink = count.SelectedIndex + 1;
+            Task.Run(()=> database.Write(resultAllDrinks));
             MessageBox.Show("Order is accepted");
         }
+
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace HW_TPL.DataAccess
 {
-    using HW_TPL.Models;
+    using HW_TPL.DTO;
     using System;
     using System.Data.Entity;
     using System.Linq;

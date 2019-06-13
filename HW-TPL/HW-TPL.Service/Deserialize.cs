@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using HW_TPL.Models;
+﻿using System.Net;
+using HW_TPL.DTO;
 using Newtonsoft.Json;
 
 namespace HW_TPL.Service

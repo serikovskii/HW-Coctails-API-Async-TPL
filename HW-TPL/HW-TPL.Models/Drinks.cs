@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace HW_TPL.Models
+namespace HW_TPL.DTO
 {
     public class Drinks
     {
@@ -23,6 +19,7 @@ namespace HW_TPL.Models
         public string AlcoholicFortresDrink { get; set; }
         [JsonProperty("strIngredient1")]
         public string IngredientDrink { get; set; }
-
+        public int CountDrink { get; set; }
+        public DateTime DateOrderDrink { get; set; } = DateTime.Now;
     }
 }

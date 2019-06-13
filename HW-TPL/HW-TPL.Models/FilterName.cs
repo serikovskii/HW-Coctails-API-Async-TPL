@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace HW_TPL.Models
+namespace HW_TPL.DTO
 {
     public class FilterName
     {
