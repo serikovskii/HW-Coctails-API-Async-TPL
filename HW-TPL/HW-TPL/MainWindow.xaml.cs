@@ -2,6 +2,7 @@
 using HW_TPL.Service;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,15 +16,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace HW_TPL
 {
     public partial class MainWindow : Window
     {
         private int indexFilter;
-        private int indexType;
         private Deserialize service;
-        private List<string> typeNames;
+        private ObservableCollection<string> typeNames;
         private string typeName;
         private List<string> drinks;
         private AllDrinks resultDrink;
@@ -34,19 +35,20 @@ namespace HW_TPL
         {
             InitializeComponent();
 
-            typeNames = new List<string>();
+            typeNames = new ObservableCollection<string>();
             drinks = new List<string>();
             service = new Deserialize();
             database = new Database();
         }
 
-        
+
         public void InitType()
         {
             Filter result;
             if (typeNames.Count > 0)
             {
-                typeNames.Clear();
+                Dispatcher.Invoke(() => typeNames.Clear());
+                Dispatcher.Invoke(() => type.IsEnabled = false);
             }
             result = service.ExecuteFilterName(indexFilter);
             switch (indexFilter)
@@ -54,26 +56,27 @@ namespace HW_TPL
                 case 0:
                     foreach (var name in result.FilterNames)
                     {
-                        typeNames.Add(name.NameCategory);
+                        Dispatcher.Invoke(() => typeNames.Add(name.NameCategory));
                     }
                     break;
                 case 1:
                     foreach (var name in result.FilterNames)
                     {
-                        typeNames.Add(name.NameAlcohol);
+                        Dispatcher.Invoke(() => typeNames.Add(name.NameAlcohol));
                     }
                     break;
             }
+
+            //TODO isCompleted?
+            Dispatcher.Invoke(() => type.IsEnabled = true);
         }
-        
+
         private void FilterSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             indexFilter = filter.SelectedIndex;
             InitTypeAsync();
 
             type.ItemsSource = typeNames;
-            //TODO isCompleted?
-            type.IsEnabled = true;
         }
         private async void InitTypeAsync()
         {
@@ -82,20 +85,38 @@ namespace HW_TPL
 
         private void TypeSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            indexType = type.SelectedIndex;
-            typeName = type.SelectedItem.ToString();
+            if (type.SelectedItem != null)
+            {
+                typeName = type.SelectedItem.ToString();
+                resultDrink = service.ExecuteAllDrinks(indexFilter, typeName, null);
+                listCoctails.ItemsSource = resultDrink.Drinks;
+            }
+            else
+            {
+                typeName = "";
+            }
             
-            resultDrink = service.ExecuteAllDrinks(indexFilter, typeName, null);
-            listCoctails.ItemsSource = resultDrink.Drinks;
         }
+
 
         private void ListCoctailsSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            resultAllDrinks = service.ExecuteAllDrinks(null, null, resultDrink.Drinks.ToArray()[listCoctails.SelectedIndex].IdDrink);
-            nameDrink.Text = resultAllDrinks.Drinks.ToArray()[0].NameDrink;
-            categoryDrink.Text = resultAllDrinks.Drinks.ToArray()[0].CategoryDrink;
-            alcoholDrink.Text = resultAllDrinks.Drinks.ToArray()[0].AlcoholicFortresDrink;
-            ingredDrink.Text = resultAllDrinks.Drinks.ToArray()[0].IngredientDrink;
+            if(listCoctails.SelectedIndex != -1)
+            {
+                resultAllDrinks = service.ExecuteAllDrinks(null, null, resultDrink.Drinks.ToArray()[listCoctails.SelectedIndex].IdDrink);
+                nameDrink.Text = resultAllDrinks.Drinks.ToArray()[0].NameDrink;
+                categoryDrink.Text = resultAllDrinks.Drinks.ToArray()[0].CategoryDrink;
+                alcoholDrink.Text = resultAllDrinks.Drinks.ToArray()[0].AlcoholicFortresDrink;
+                ingredDrink.Text = resultAllDrinks.Drinks.ToArray()[0].IngredientDrink;
+            }
+            else
+            {
+                nameDrink.Text = null;
+                categoryDrink.Text = null;
+                alcoholDrink.Text = null;
+                ingredDrink.Text = null;
+            }
+            
         }
 
         private void OrderDrink(object sender, RoutedEventArgs e)

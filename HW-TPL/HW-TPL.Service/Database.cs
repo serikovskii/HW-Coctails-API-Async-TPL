@@ -10,43 +10,6 @@ namespace HW_TPL.Service
 {
     public class Database
     {
-        //public async void Write(AllDrinks drink)
-        //{
-        //    bool coincidence = false;
-
-        //    using (var context = new DrinkContext())
-        //    {
-        //        var tmp = context.Drinksess.ToArray();
-
-        //        if (context.Drinksess != null)
-        //        {
-        //            for (int i = 0; i < tmp.Count(); i++)
-        //            {
-        //                if (tmp[i].IdDrink == drink.Drinks[0].IdDrink)
-        //                {
-        //                    tmp[i].CountOrdering++;
-        //                    //var allIngredients = tmp.Where(ingr => ingr.IngredientDrink == tmp[i].IngredientDrink).ToList();
-        //                    //foreach(var similarIngr in allIngredients)
-        //                    //{
-        //                    //    similarIngr.CountIngredient--;
-        //                    //}
-
-        //                    tmp[i].CountIngredient--;
-        //                    coincidence = true;
-        //                    break;
-        //                }
-        //                else if ((tmp.Count() - 1) == i && !coincidence)
-        //                {
-        //                    context.Drinksess.AddRange(drink.Drinks);
-        //                }
-        //            }
-        //        }
-        //        else
-        //            context.Drinksess.AddRange(drink.Drinks);
-        //        await context.SaveChangesAsync();
-        //    }
-        //}
-
         public async void Write(AllDrinks drink)
         {
             using (var context = new DrinkContext())
